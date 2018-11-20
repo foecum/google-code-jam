@@ -15,10 +15,11 @@ func main() {
 		fmt.Scan(&pancakes)
 		pancakesArray := reverse(pancakes)
 		for i, v := range pancakesArray {
-			if v == "-" {
-				flipPancakes(&pancakesArray, i)
-				numOfFlips++
+			if v != "-" {
+				continue
 			}
+			flipPancakes(&pancakesArray, i)
+			numOfFlips++
 		}
 
 		fmt.Printf("Case #%d: %d\n", i, numOfFlips)
@@ -27,11 +28,10 @@ func main() {
 
 func flipPancakes(pancakes *[]string, index int) {
 	for i := index; i < len(*pancakes); i++ {
-		if (*pancakes)[i] == "-" {
+		switch (*pancakes)[i] {
+		case "-":
 			(*pancakes)[i] = "+"
-			continue
-		}
-		if (*pancakes)[i] == "+" {
+		case "+":
 			(*pancakes)[i] = "-"
 		}
 	}
