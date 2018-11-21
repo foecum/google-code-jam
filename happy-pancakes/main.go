@@ -9,42 +9,40 @@ func main() {
 	fmt.Scan(&numTestCases)
 
 	for i := 1; i <= numTestCases; i++ {
-		var numOfFlips int
-
 		var pancakes string
 		fmt.Scan(&pancakes)
-		pancakesArray := reverse(pancakes)
-		for i, v := range pancakesArray {
-			if v != "-" {
-				continue
-			}
-			flipPancakes(&pancakesArray, i)
-			numOfFlips++
-		}
-
-		fmt.Printf("Case #%d: %d\n", i, numOfFlips)
+		flipPancakes(pancakes, i)
 	}
 }
 
-func flipPancakes(pancakes *[]string, index int) {
-	for i := index; i < len(*pancakes); i++ {
-		switch (*pancakes)[i] {
-		case "-":
-			(*pancakes)[i] = "+"
-		case "+":
-			(*pancakes)[i] = "-"
+func flipPancakes(pancakes string, index int) {
+	var numOfFlips int
+	pancakesArray := reverse(pancakes)
+	for i, v := range pancakesArray {
+		if v != "-" {
+			continue
 		}
+		for j := i; j < len(pancakesArray); j++ {
+			switch pancakesArray[j] {
+			case "-":
+				pancakesArray[j] = "+"
+			case "+":
+				pancakesArray[j] = "-"
+			}
+		}
+		numOfFlips++
 	}
+	fmt.Printf("Case #%d: %d\n", index, numOfFlips)
 }
 
 func reverse(s string) []string {
 	n := len(s)
 
-	rs := make([]string, n)
+	rsl := make([]string, n)
 
 	for _, v := range s {
 		n--
-		rs[n] = string(v)
+		rsl[n] = string(v)
 	}
-	return rs
+	return rsl
 }
