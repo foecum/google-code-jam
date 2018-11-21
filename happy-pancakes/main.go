@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 func main() {
@@ -11,13 +12,15 @@ func main() {
 	for i := 1; i <= numTestCases; i++ {
 		var pancakes string
 		fmt.Scan(&pancakes)
-		flipPancakes(pancakes, i)
+		numOfFlips := flipPancakes(pancakes, i)
+
+		fmt.Printf("Case #%d: %d\n", i, numOfFlips)
 	}
 }
 
-func flipPancakes(pancakes string, index int) {
+func flipPancakes(pancakes string, index int) int {
 	var numOfFlips int
-	pancakesArray := reverse(pancakes)
+	pancakesArray := strings.Split(reverse(pancakes), "")
 	for i, v := range pancakesArray {
 		if v != "-" {
 			continue
@@ -32,10 +35,10 @@ func flipPancakes(pancakes string, index int) {
 		}
 		numOfFlips++
 	}
-	fmt.Printf("Case #%d: %d\n", index, numOfFlips)
+	return numOfFlips
 }
 
-func reverse(s string) []string {
+func reverse(s string) string {
 	n := len(s)
 
 	rsl := make([]string, n)
@@ -44,5 +47,5 @@ func reverse(s string) []string {
 		n--
 		rsl[n] = string(v)
 	}
-	return rsl
+	return strings.Join(rsl, "")
 }
