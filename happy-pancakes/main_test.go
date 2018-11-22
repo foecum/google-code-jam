@@ -21,11 +21,10 @@ func TestReverse(t *testing.T) {
 		},
 	}
 	for _, tt := range tc {
-		r := new([]rune)
-		r = tt.text
-		result := reverse(r)
-		if string(tt.expected) != string(result) {
-			t.Errorf("test failed. expected %s but got %s\n", string(tt.expected), string(result))
+		r := []rune(tt.text)
+		reverse(&r)
+		if string(tt.expected) != string(r) {
+			t.Errorf("test failed. expected %s but got %s\n", string(tt.expected), string(r))
 		}
 	}
 }
@@ -33,8 +32,7 @@ func TestReverse(t *testing.T) {
 func BenchmarkReverse(b *testing.B) {
 	// run the Fib function b.N times
 	for n := 0; n < b.N; n++ {
-		var r []rune
-		r = []rune("---++")
+		r := []rune("---++")
 		reverse(&r)
 	}
 }
