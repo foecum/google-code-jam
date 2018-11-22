@@ -5,25 +5,27 @@ import "testing"
 func TestReverse(t *testing.T) {
 	tc := []struct {
 		text     string
-		expected string
+		expected []rune
 	}{
 		{
 			text:     "---++",
-			expected: "++---",
+			expected: []rune("++---"),
 		},
 		{
 			text:     "-----",
-			expected: "-----",
+			expected: []rune("-----"),
 		},
 		{
 			text:     "",
-			expected: "",
+			expected: []rune(""),
 		},
 	}
 	for _, tt := range tc {
-		result := reverse(tt.text)
-		if tt.expected != result {
-			t.Errorf("test failed. expected %s but got %s\n", tt.expected, result)
+		r := new([]rune)
+		r = tt.text
+		result := reverse(r)
+		if string(tt.expected) != string(result) {
+			t.Errorf("test failed. expected %s but got %s\n", string(tt.expected), string(result))
 		}
 	}
 }
@@ -31,7 +33,9 @@ func TestReverse(t *testing.T) {
 func BenchmarkReverse(b *testing.B) {
 	// run the Fib function b.N times
 	for n := 0; n < b.N; n++ {
-		reverse("---++")
+		var r []rune
+		r = []rune("---++")
+		reverse(&r)
 	}
 }
 
@@ -59,7 +63,9 @@ func TestFlipPancakes(t *testing.T) {
 	}
 
 	for _, tt := range tc {
-		result := flipPancakes(tt.text, 1)
+		var r []rune
+		r = []rune(tt.text)
+		result := flipPancakes(r, 1)
 		if tt.expected != result {
 			t.Errorf("test failed. expected %d but got %d\n", tt.expected, result)
 		}
@@ -69,6 +75,8 @@ func TestFlipPancakes(t *testing.T) {
 func BenchmarkFlipPancakes(b *testing.B) {
 	// run the Fib function b.N times
 	for n := 0; n < b.N; n++ {
-		flipPancakes("---++", 1)
+		var r []rune
+		r = []rune("---++")
+		flipPancakes(r, 1)
 	}
 }
