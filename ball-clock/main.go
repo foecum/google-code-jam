@@ -6,16 +6,20 @@ import (
 	"time"
 )
 
-var zeroIndex = -1
-var minuteQueue = make([]int, 0)
-var fiveMinuteQueue = make([]int, 0)
-var hourQueue = make([]int, 0)
+var minuteQueue = make([]rune, 0)
+var fiveMinuteQueue = make([]rune, 0)
+var hourQueue = make([]rune, 0)
 
 func main() {
 	var numOfBalls int
 	fmt.Scan(&numOfBalls)
 
 	ballQueue := make([]int, numOfBalls)
+	if len(ballQueue) >= 27 && len(ballQueue) <= 127 {
+		for i := range ballQueue {
+			ballQueue[i] = i + 1
+		}
+	}
 	startTime := time.Now()
 	numOfCyles := calculateCycles(&ballQueue)
 	since := time.Since(startTime)
@@ -26,19 +30,15 @@ func main() {
 
 func calculateCycles(ballQueue *[]int) int {
 	var cycles int
-	if len(*ballQueue) >= 27 && len(*ballQueue) <= 127 {
-		for i := range *ballQueue {
-			(*ballQueue)[i] = i + 1
-		}
+	var oLen = len(*ballQueue)
 
-		for {
-			cycles += popQueue(ballQueue)
-			if sort.IntsAreSorted(*ballQueue) && !contains(ballQueue, 0) {
-				break
-			}
+	for {
+		cycles += popQueue(ballQueue)
+		if sort.IntsAreSorted(*ballQueue) && !contains(ballQueue, 0) && len(*ballQueue) == oLen {
+			break
 		}
-
 	}
+
 	return cycles
 }
 
@@ -52,30 +52,17 @@ func contains(balls *[]int, search int) bool {
 }
 
 func popQueue(ballQueue *[]int) int {
-	var zeroFound bool
+	//var zeroFound bool
 	var cycle int
 
 	ballToPop := (*ballQueue)[0]
-	for i := range *ballQueue {
-		if i < len(*ballQueue)-1 {
-			(*ballQueue)[i] = (*ballQueue)[i+1]
-			if (*ballQueue)[i] == 0 && !zeroFound {
-				zeroIndex = i
-				zeroFound = true
-			}
-		}
-	}
-
-	(*ballQueue)[len(*ballQueue)-1] = 0
-	if zeroIndex == -1 {
-		zeroIndex = len(*ballQueue) - 1
-	}
+	*ballQueue = (*ballQueue)[1:]
 
 	switch len(minuteQueue) {
 	case 4:
 		cycle = resetMinuteHand(ballToPop, ballQueue)
 	default:
-		minuteQueue = append(minuteQueue, ballToPop)
+		minuteQueue = append(minuteQueue, rune(ballToPop))
 	}
 
 	return cycle
@@ -86,8 +73,7 @@ func resetMinuteHand(ball int, ballQueue *[]int) int {
 
 	for range minuteQueue {
 		n--
-		(*ballQueue)[zeroIndex] = minuteQueue[n]
-		zeroIndex++
+		*ballQueue = append(*ballQueue, int(minuteQueue[n]))
 	}
 
 	minuteQueue = nil
@@ -95,7 +81,7 @@ func resetMinuteHand(ball int, ballQueue *[]int) int {
 		return resetFiveMinHand(ball, ballQueue)
 	}
 
-	fiveMinuteQueue = append(fiveMinuteQueue, ball)
+	fiveMinuteQueue = append(fiveMinuteQueue, rune(ball))
 
 	return 0
 }
@@ -105,8 +91,7 @@ func resetFiveMinHand(ball int, ballQueue *[]int) int {
 
 	for range fiveMinuteQueue {
 		n--
-		(*ballQueue)[zeroIndex] = fiveMinuteQueue[n]
-		zeroIndex++
+		*ballQueue = append(*ballQueue, int(fiveMinuteQueue[n]))
 	}
 
 	fiveMinuteQueue = nil
@@ -114,7 +99,7 @@ func resetFiveMinHand(ball int, ballQueue *[]int) int {
 		resetHourHand(ball, ballQueue)
 		return 1
 	}
-	hourQueue = append(hourQueue, ball)
+	hourQueue = append(hourQueue, rune(ball))
 	return 0
 }
 
@@ -123,9 +108,9 @@ func resetHourHand(ball int, ballQueue *[]int) {
 
 	for range hourQueue {
 		n--
-		(*ballQueue)[zeroIndex] = hourQueue[n]
-		zeroIndex++
+		*ballQueue = append(*ballQueue, int(hourQueue[n]))
 	}
-	(*ballQueue)[len(*ballQueue)-1] = ball
+
+	*ballQueue = append(*ballQueue, ball)
 	hourQueue = nil
 }
