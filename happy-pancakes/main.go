@@ -21,7 +21,7 @@ func flipPancakes(pancakes []rune, index int) int {
 	var numOfFlips int
 	reverse(&pancakes)
 	for i, v := range pancakes {
-		if v != '-' {
+		if v == '+' {
 			continue
 		}
 		for j := i; j < len(pancakes); j++ {
