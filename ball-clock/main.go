@@ -2,115 +2,182 @@ package main
 
 import (
 	"fmt"
-	"sort"
 	"time"
 )
 
-var minuteQueue = make([]rune, 0)
-var fiveMinuteQueue = make([]rune, 0)
-var hourQueue = make([]rune, 0)
+/**
+Optimising app
+-Remove slices
+-Remove unneccessary allocations
+-Reduce function calls
+*/
+
+var minuteQueue [4]rune
+var fiveMinuteQueue [11]rune
+var hourQueue [11]rune
+
+var minuteIndex int
+var fiveMinuteIndex int
+var hourIndex int
+
+var firstZeroIndex = -1
 
 func main() {
-	var numOfBalls int
-	fmt.Scan(&numOfBalls)
+	var numOfBalls = 123
 
-	ballQueue := make([]int, numOfBalls)
-	if len(ballQueue) >= 27 && len(ballQueue) <= 127 {
-		for i := range ballQueue {
-			ballQueue[i] = i + 1
-		}
-	}
 	startTime := time.Now()
-	numOfCyles := calculateCycles(&ballQueue)
+	numOfCycles := calculateCycles(numOfBalls)
 	since := time.Since(startTime)
-	fmt.Printf("%d balls cycle after %d days.\n", numOfBalls, numOfCyles/2)
+	fmt.Printf("%d balls cycle after %d days.\n", numOfBalls, numOfCycles/2)
 	fmt.Printf("Run for %s\n", since)
 	fmt.Printf("Run for %.02fs\n", since.Seconds())
 }
 
-func calculateCycles(ballQueue *[]int) int {
-	var cycles int
-	var oLen = len(*ballQueue)
+func calculateCycles(numOfBalls int) int {
+	ballQueue := make([]rune, numOfBalls)
+	for i := range ballQueue {
+		ballQueue[i] = rune(i + 1)
+	}
 
+	var numOfCyles int
 	for {
-		cycles += popQueue(ballQueue)
-		if sort.IntsAreSorted(*ballQueue) && !contains(ballQueue, 0) && len(*ballQueue) == oLen {
+		ballToPop := ballQueue[0]
+		ballQueue = append(ballQueue[1:], 0)
+		// for i := 0; i < len(ballQueue)-2; i += 2 {
+		// 	ballQueue[i], ballQueue[i+1] = ballQueue[i+1], ballQueue[i+2]
+		// }
+		// ballQueue[len(ballQueue)-1] = 0
+
+		switch firstZeroIndex < 0 {
+		case true:
+			firstZeroIndex = len(ballQueue) - 1
+		default:
+			firstZeroIndex--
+		}
+
+		switch minuteIndex < 4 {
+		case true:
+			minuteQueue[minuteIndex] = ballToPop
+			minuteIndex++
+		default:
+			// minute hand is full
+			minuteIndex--
+			ballQueue[firstZeroIndex] = minuteQueue[minuteIndex]
+			firstZeroIndex++
+			minuteIndex--
+			ballQueue[firstZeroIndex] = minuteQueue[minuteIndex]
+			firstZeroIndex++
+			minuteIndex--
+			ballQueue[firstZeroIndex] = minuteQueue[minuteIndex]
+			firstZeroIndex++
+			minuteIndex--
+			ballQueue[firstZeroIndex] = minuteQueue[minuteIndex]
+			firstZeroIndex++
+
+			// fiveMinute hand is not full
+			if fiveMinuteIndex < 11 {
+				fiveMinuteQueue[fiveMinuteIndex] = ballToPop
+				fiveMinuteIndex++
+				break
+			}
+
+			// fiveMinute hand is full
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+			fiveMinuteIndex--
+			ballQueue[firstZeroIndex] = fiveMinuteQueue[fiveMinuteIndex]
+			firstZeroIndex++
+
+			// hour hand is not full
+			if hourIndex < 11 {
+				hourQueue[hourIndex] = ballToPop
+				hourIndex++
+				break
+			}
+			// hour hand is full
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+			hourIndex--
+			ballQueue[firstZeroIndex] = hourQueue[hourIndex]
+			firstZeroIndex++
+
+			ballQueue[firstZeroIndex] = ballToPop
+			firstZeroIndex++
+
+			firstZeroIndex = -1
+			numOfCyles++
+		}
+
+		if isSorted(ballQueue) {
 			break
 		}
 	}
 
-	return cycles
+	return numOfCyles
 }
 
-func contains(balls *[]int, search int) bool {
-	for _, v := range *balls {
-		if v == search {
-			return true
+func isSorted(r []rune) bool {
+	n := len(r)
+	for i := n - 1; i > 0; i-- {
+		if r[i] < r[i-1] {
+			return false
 		}
 	}
-	return false
-}
-
-func popQueue(ballQueue *[]int) int {
-	//var zeroFound bool
-	var cycle int
-
-	ballToPop := (*ballQueue)[0]
-	*ballQueue = (*ballQueue)[1:]
-
-	switch len(minuteQueue) {
-	case 4:
-		cycle = resetMinuteHand(ballToPop, ballQueue)
-	default:
-		minuteQueue = append(minuteQueue, rune(ballToPop))
-	}
-
-	return cycle
-}
-
-func resetMinuteHand(ball int, ballQueue *[]int) int {
-	n := len(minuteQueue)
-
-	for range minuteQueue {
-		n--
-		*ballQueue = append(*ballQueue, int(minuteQueue[n]))
-	}
-
-	minuteQueue = nil
-	if len(fiveMinuteQueue) == 11 {
-		return resetFiveMinHand(ball, ballQueue)
-	}
-
-	fiveMinuteQueue = append(fiveMinuteQueue, rune(ball))
-
-	return 0
-}
-
-func resetFiveMinHand(ball int, ballQueue *[]int) int {
-	n := len(fiveMinuteQueue)
-
-	for range fiveMinuteQueue {
-		n--
-		*ballQueue = append(*ballQueue, int(fiveMinuteQueue[n]))
-	}
-
-	fiveMinuteQueue = nil
-	if len(hourQueue) == 11 {
-		resetHourHand(ball, ballQueue)
-		return 1
-	}
-	hourQueue = append(hourQueue, rune(ball))
-	return 0
-}
-
-func resetHourHand(ball int, ballQueue *[]int) {
-	n := len(hourQueue)
-
-	for range hourQueue {
-		n--
-		*ballQueue = append(*ballQueue, int(hourQueue[n]))
-	}
-
-	*ballQueue = append(*ballQueue, ball)
-	hourQueue = nil
+	return true
 }

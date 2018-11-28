@@ -15,11 +15,14 @@ func TestCalculateCycles(t *testing.T) {
 			numBalls:  45,
 			numCycles: 756,
 		},
+		{
+			numBalls:  123,
+			numCycles: 217710,
+		},
 	}
 
 	for _, tt := range tc {
-		queue := make([]int, tt.numBalls)
-		cycles := calculateCycles(&queue)
+		cycles := calculateCycles(tt.numBalls)
 		if cycles != tt.numCycles {
 			t.Errorf("expected %d but got %d", tt.numCycles, cycles)
 		}
@@ -28,7 +31,6 @@ func TestCalculateCycles(t *testing.T) {
 
 func BenchmarkCalculateCycles(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		queue := make([]int, 45)
-		calculateCycles(&queue)
+		calculateCycles(123)
 	}
 }
